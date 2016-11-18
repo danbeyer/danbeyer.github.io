@@ -1,0 +1,155 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+				  <li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>Creating a website to make a client side AJAX request</h1>
+		</br>
+		<p>For this part of the guide, we will be making a client side AJAX request to our server we are running.  This will take a format
+		similar to first experiment on Page 2:</p>
+		
+		<pre><code>var req = new XMLHttpRequest();
+req.open("GET", URL, true);
+req.addEventListener('load', function(){
+	if(req.status>= 200 && req.status<400){
+	var response = JSON.parse(req.responseText);
+	console.log(JSON.parse(req.responseText));
+	}
+		else {
+			console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);</pre></code>
+	</br>
+	<p>The key part of this code is the <strong>URL</strong>.  This is the address of our server that will activate the corresponding route
+	to signal the server to send its HTTP request to the Steam Web API.  What we put in that URL will determine which route will be called.  We will eventually
+	create a page with text areas to input the corresponding AppId and/or PlayerId which will then run this request using the URL created with those text inputs.</p>  
+	
+	<p>To simplify things, we can make a website that has an input area for each API method we wish to call.  We can then create a script for each of those input areas 
+	to make the correct GET requests to our server.  Here is an example of what one of these functions could look like.  In this example, the function is called upon a button click
+	and it reads the number that has been entered into the text field.  That number is appended to the base URL (in this case the URL that call our GetNews route), and the completed
+	URL is used to make the GET request to our server.</p>
+	<pre></code>function bindGetNewsButton(){
+	document.getElementById('getNewsForApp').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getnews/?"
+	var userInput = document.getElementById('getNewsInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(JSON.parse(req.responseText));
+		}
+		else {
+			console.log("Error in network request: " + request.statusText);
+		}
+	});
+	req.send(null);
+});
+}</pre></code>
+</br>
+
+	<p>And here is an example of a request being made to a route that requires both a AppID and a SteamID.  In this example, I have used 
+	two text entry boxes to obtain the AppID and SteamID, and then used these values to construct the URL that is sent in the GET request:
+	<pre></code>function bindUserStatsButton(){
+	document.getElementById('getUserStatsForGame').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getuserstats/?"
+	var userAppID = document.getElementById('getUserStatsAppID').value;
+	var userPlayerID = document.getElementById('getUserStatsPlayerID').value;
+	var newURL = homeURL+userAppID+'='+userPlayerID;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(JSON.parse(req.responseText));
+		}
+		else {
+			console.log("Error in network request: " + request.statusText);
+		}
+	});
+	req.send(null);
+	console.log("Egg");
+	event.preventDefault();
+});
+}</pre></code>
+</br>
+	<p>So now with our functioning scripts, we can successfully make AJAX calls to our server.  Let's give it a try on the next page!</p>
+	
+        <p>
+          <a class="btn btn-lg btn-primary" href="page4.html" role="button">Try it out! &raquo;</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="functions.js"></script>
+
+
+
+  </body>
+</html>

@@ -1,0 +1,456 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+					<li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>Testing our AJAX GET requests to our server</h1>
+		</br>
+		<p>Below are some example calls we can test out.  Each text entry box will send a GET request to our running server and activate
+		the appropriate route.  So the first step here is to start our server in Node.js.  Without that step, nothing will happen here.  
+		Also recall that for most of these calls to work, you will need to substitute your own Steam API key into the server.js file.  Once 
+		our server is running, try entering game AppIDs and/or SteamIDs.  Once you have clicked submit, right-click on the website and go to the console.
+		Here is where you will see the actual JSON object that is returned from the Steam Web API.   What we do with this object and how we access its contents 
+		will be covered on the next page.</p>
+		
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetNewsForApp</label>
+			<input type="text" class="form-control" id ="getNewsInput" placeholder="Enter game AppID">
+			<button class="btn btn-primary" id="getNewsForApp" type="button">Submit</button>
+			</div>
+		</form>
+
+  </br>
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetGlobalAchievementPercentagesForApp</label>
+			<input type="text" class="form-control" id ="getAchPcntInput" placeholder="Enter game AppID">
+			<button class="btn btn-primary" id="getGlobalAchievementPercentagesForApp" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetPlayerSummaries</label>
+			<input type="text" class="form-control" id ="getPlSummaryInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="getPlayerSummaries" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+		
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetFriendList</label>
+			<input type="text" class="form-control" id ="getFriendListInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="getFriendList" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetPlayerAchievements</label>
+			<input type="text" class="form-control" id ="getPlayerAchievementsInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="GetPlayerAchievements" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+		<form class="form-inline">
+		<fieldset>
+		<legend>GetUserStatsForGame</legend>
+			<div class="form-group">
+				<label for="getUserStatsAppID">AppID</label>
+				<input type="text" class="form-control" id="getUserStatsAppID" placeholder="Enter game AppID">
+			</div>
+			<div class="form-group">
+				<label for="getUserStatsPlayerID">PlayerID</label>
+				<input type="text" class="form-control" id="getUserStatsPlayerID" placeholder="Enter PlayerID">
+			</div>
+			<button type="submit" id="getUserStatsForGame" class="btn btn-primary">Submit</button>
+			</fieldset>
+			</form>
+			</br>
+			
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetOwnedGames</label>
+			<input type="text" class="form-control" id ="getOwnedGamesInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="GetOwnedGames" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+		
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetRecentlyPlayedGames</label>
+			<input type="text" class="form-control" id ="getRecentlyPlayedGamesInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="GetRecentlyPlayedGames" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+
+		<form class="form-inline">
+		<fieldset>
+		<legend>IsPlayingSharedGame</legend>
+			<div class="form-group">
+				<label for="getUserStatsAppID">AppID</label>
+				<input type="text" class="form-control" id="IsPlayingSharedGameAppID" placeholder="Enter game AppID">
+			</div>
+			<div class="form-group">
+				<label for="getUserStatsPlayerID">PlayerID</label>
+				<input type="text" class="form-control" id="IsPlayingSharedGamePlayerID" placeholder="Enter SteamID">
+			</div>
+			<button type="submit" id="IsPlayingSharedGame" class="btn btn-primary">Submit</button>
+			</fieldset>
+			</form>
+			</br>
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetSchemaForGame</label>
+			<input type="text" class="form-control" id ="GetSchemaForGameInput" placeholder="Enter AppID">
+			<button class="btn btn-primary" id="GetSchemaForGame" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+		
+
+		<form>
+			<div class="form-group">
+			<label for="getNewsInput">GetPlayerBans</label>
+			<input type="text" class="form-control" id ="GetPlayerBansInput" placeholder="Enter SteamID">
+			<button class="btn btn-primary" id="GetPlayerBans" type="button">Submit</button>
+			</div>
+		</form>
+		</br>
+		</br>
+		<p>Below you can find an example of the functions I used for each of these GET requests.  
+		For illustrative purposes I have somewhat tediously written out each function  to demonstrate the different requests we are making to our server.</p>
+		<div class="pre-scrollable"><pre><code>document.addEventListener('DOMContentLoaded', bindGetNewsButton);
+document.addEventListener('DOMContentLoaded', bindUserStatsButton);
+document.addEventListener('DOMContentLoaded', bindGetAchPcntButton);
+document.addEventListener('DOMContentLoaded', bindGetPlayerSummariesButton);
+document.addEventListener('DOMContentLoaded', bindGetFriendListButton);
+document.addEventListener('DOMContentLoaded', bindGetPlayerAchievementsButton);
+document.addEventListener('DOMContentLoaded', bindGetRecentlyPlayedGamesButton);
+document.addEventListener('DOMContentLoaded', bindGetOwnedGamesButton);
+document.addEventListener('DOMContentLoaded', bindIsPlayingSharedGameButton);
+document.addEventListener('DOMContentLoaded', bindGetSchemaForGameButton);
+document.addEventListener('DOMContentLoaded', bindGetPlayerBansButton);
+
+
+
+function bindGetNewsButton(){
+	document.getElementById('getNewsForApp').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getnews/?"
+	var userInput = document.getElementById('getNewsInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetAchPcntButton(){
+	document.getElementById('getGlobalAchievementPercentagesForApp').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getachievementsperc/?"
+	var userInput = document.getElementById('getAchPcntInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetPlayerSummariesButton(){
+	document.getElementById('getPlayerSummaries').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getplayersummary/?"
+	var userInput = document.getElementById('getPlSummaryInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetFriendListButton(){
+	document.getElementById('getFriendList').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getfriendlist/?"
+	var userInput = document.getElementById('getFriendListInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetPlayerAchievementsButton(){
+	document.getElementById('GetPlayerAchievements').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getplayerachievements/?"
+	var userInput = document.getElementById('getPlayerAchievementsInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+
+function bindUserStatsButton(){
+	document.getElementById('getUserStatsForGame').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getuserstats/?"
+	var userAppID = document.getElementById('getUserStatsAppID').value;
+	var userPlayerID = document.getElementById('getUserStatsPlayerID').value;
+	var newURL = homeURL+userAppID+'='+userPlayerID;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetOwnedGamesButton(){
+	document.getElementById('GetOwnedGames').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getownedgames/?"
+	var userInput = document.getElementById('getOwnedGamesInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetRecentlyPlayedGamesButton(){
+	document.getElementById('GetRecentlyPlayedGames').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getrecentlyplayed/?"
+	var userInput = document.getElementById('getRecentlyPlayedGamesInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindIsPlayingSharedGameButton(){
+	document.getElementById('IsPlayingSharedGame').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/isplayingshared/?"
+	var userAppID = document.getElementById('IsPlayingSharedGameAppID').value;
+	var userPlayerID = document.getElementById('IsPlayingSharedGamePlayerID').value;
+	var newURL = homeURL+userAppID+'='+userPlayerID;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetSchemaForGameButton(){
+	document.getElementById('GetSchemaForGame').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getschema/?"
+	var userInput = document.getElementById('GetSchemaForGameInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}
+
+function bindGetPlayerBansButton(){
+	document.getElementById('GetPlayerBans').addEventListener('click', function(event) {
+	var homeURL = "http://localhost:3000/getbans/?"
+	var userInput = document.getElementById('GetPlayerBansInput').value;
+	var newURL = homeURL+userInput;
+	var req = new XMLHttpRequest();
+	req.open("GET", newURL, true);
+	req.addEventListener('load', function(){
+		if(req.status>= 200 && req.status<400){
+		var response = JSON.parse(req.responseText);
+		console.log(response);
+		}
+			else {
+				console.log("Error in network request: " + request.statusText);
+			}
+	});
+	req.send(null);
+	event.preventDefault();
+});
+}</pre></code></div>
+</br>
+
+        <p>
+          <a class="btn btn-lg btn-primary" href="page5.html" role="button">Using the JSON Object &raquo;</a>
+        </p>
+      </div>
+    </div> <!-- /container -->
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="functions.js"></script>
+
+
+
+  </body>
+</html>

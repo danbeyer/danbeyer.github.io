@@ -1,0 +1,405 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+				  <li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>CORS and writing our basic server</h1>
+		<h2>Software required for this section:</h2>
+		<ul>
+		<li><a href="https://nodejs.org/en"><strong>Node.js</strong></a></li>
+		<li><a href="http://expressjs.com/"><strong>Node.js Express</strong></a></li>
+		</ul>
+		</br>
+		<p>Before going any further, lets try an experiment.  Let's see what happens if we attempt to make a basic AJAX  HTTP call
+		to Steam's Web API from a local host browser.  Steam Web API calls come in a familiar format with your key(if needed)
+		and query parameters contained in the URL:</p>
+		<pre><code> http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=440&count=3&maxlength=300&format=json</code></pre>
+		
+		<p>In the above example, we would be querying to obtain the most recent news for a game represented by its App Id (440).  
+		We would recieve the 3 most recent news updates with a max length for the news stories of 300 characters. </p>
+		<p>The Steam Web API methods can return results in 3 different formats: JSON, XML, and VDF(a Value proprietary format).
+		For our purposes, we will be parsing the JSON objects.
+		So to make a basic AJAX HTTP client call to the Steam Web API, we would create a basic Javascript GET request like this:</p>
+		<pre><code> var req = new XMLHttpRequest();
+ req.open("GET", "http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=440&count=3&maxlength=300&format=json", false);
+ req.send(null);
+ console.log(JSON.parse(req.responseText));</code></pre>
+ 
+		<p>When we execute this script and we go to the console in our browser, we are presented with this error:</p>
+		<img src="images/corsError.png">
+		
+		<p>This is an example of Steam not allowing something called Cross Origin Resource Sharing, or CORS.  So what is CORS and what do
+		we do if Steam does not allow it?</p>
+		</br>
+		
+		<h2>Cross Origin Resource Sharing</h2>
+		<p>When we tried to make the above call to the Steam Web API, we were making a cross-origin HTTP request.  The XMLHttpRequest was 
+		originating in our script from our local host domain and making the request to Steam's domain.  For security purposes, modern browsers 
+		restrict cross-origin HTTP requests.  In other words, our XMLHttpRequest can only make calls to our own domain.  
+		Without going too in depth (and because I am still learning about CORS and therefore not entirely comfortable with the concept myself),
+		CORS is an industry standard that gives servers cross-domain access controls that enable cross-domain communication using new HTTP headers.
+		The problem for us in dealing with the Steam Web API is that Steam does not allow CORS requests.  So we need to find a way around this.</p>
+        <p>
+		</br>
+		</br>
+		<h2>Making Server Side HTTP calls</h2>
+		<p>To get around the issue of cross-domain access, we will create our own server to make HTTP requests.  We can then send our own client side
+		requests to our server to parse and work with the return JSON objects.  Let's begin by creating a new Javascript file.  There are a few key lines of code
+		we will need in this file at the beginning to get started.  First, we need to load the modules we will be using with Node.js.  These are Request and Express.
+		We are also going to call the express function to return a new Express application.  This should look like this:</p>
+		<pre><code>var express = require('express');
+var app = express();
+var request = require('request');</code></pre>
+		
+		</br>
+		<p> Next we need to set which port our local server will be listening through for our requests:</p>
+		<pre><code>app.set('port', 3000);</code></pre>
+		</br>
+		
+		<p>Now for the centerpiece of our server code, a route.  This route will map a URL to a function that sends a request to
+			the Steam Web API:</p>
+			<pre><code>app.get('/getnews', function(req, res) {
+var qParams = [];
+for (var p in req.query) {
+	qParams.push({'name':p, 'value':req.query[p]})
+	}
+	var url = 'http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=' + qParams[0].name + '&count=3&maxlength=300&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+}); </code></pre>
+		</br>
+		
+		<p>In this example, we are working with the same Get News method.  In this route, there are 2 major parts: A part where we obtain parameters
+		and the part where we actually send the request.  The route begins with <mark>app.get</mark> indicating this will be a GET request.  
+		The <mark>get()</mark> method is passed an address and an event handler function that runs only at the designated URL (here it is "/getnews").   
+		The first part of this route is the obtaining of parameters from the URL address request send by the client.  The request object has a
+		<strong>query</strong> property that identifies name/value pairs for all the data sent in the query string (in this case our URL).  We can use 
+		this property to store these values in an array to be accessed later to create our URL for the request sent to the Steam Web API:
+		<pre><code>var qParams = [];
+for (var p in req.query) {
+	qParams.push({'name':p, 'value':req.query[p]})
+	}</code></pre>
+	</br>
+	
+	<p>There are probably more straightforward and more elegant ways in which to obtain user input to pass on in our server side request, but at my current
+	level of understanding, this was the easiest method I could come up with.  In the above code, we are storing the query parameters in an array called <strong>qParams</strong>.
+	For the purposes of this tutorial, we will be using primarily the AppId or SteamID number corresponding to a game or player as the parameter.  
+	In the cases where a call requires an AppId and SteamID, the URL will take the form <strong>/?AppId=SteamId</strong>  So as an example, in order to send a request to return 
+	the news for the PC game Team Fortress 2 (AppId = 440), our URL would look like this: <strong>http://localhost:3000/getnews/?440</strong></p>
+	</br>
+	<p>If we need to make a call that requires an AppId AND PlayerID, our URL would look something like this:
+	<strong>http://localhost:3000//getuserstats/?440=12345</strong>
+	
+	</br>
+	<p>The next section of our route is the request sent to the Steam Web API.  We use this portion of the request: </p>
+	<pre><code>http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=' + qParams[0].name + '&count=3&maxlength=300&format=json</code></pre>
+	<p>to join our parameter to the API call.  Since we will always be using only one or two numbers (AppId and/or PlayerId), we will always be using the first element of the array.  
+	If we are making a call for a method that requires both the name and value of our query parameter, the call would look something like this:</p>
+	<pre><code>http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=' + qParams[0].name + '&key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].value</code></pre>
+	</br>
+	
+	<h2>What about making cross-domain requests to our server?</h2>
+	</br>
+	<p>In order to be able to access our server from our client browser, we need to add the necessary headers for allowing CORS.  This is done by adding the following code to the beginning 
+	of our server file:</p>
+	<pre><code>app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});</pre></code>
+	
+	<h2>Our finished server Javascript file</h2>
+	</br>
+	<p>Now that we have figured out what our routes will look like, we can add each one to our server Javascript file so each can be appropriately called.
+	Visit <a href="https://developer.valvesoftware.com/wiki/Steam_Web_API#GetSchemaForGame_.28v2.29"><strong>the Steam Web API documentation</strong></a> to find more 
+	details on the various methods.  
+	Here is what the finished file should look like (You will need to edit in your Steam API Key where appropriate):</p>
+	<div class="pre-scrollable"><pre><code>var express = require('express');
+
+var app = express();
+var request = require('request');
+
+app.set('port', 3000);
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// Here gets parameters from end of URL to use in api address.  These parameters will come from submit buttons 
+// on the respective sites
+app.get('/getnews', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+	var url = 'http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=' + qParams[0].name + '&count=3&maxlength=300&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getachievementsperc', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+	var url = 'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=' + qParams[0].name + '&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+//Requires AppId and name of achievement
+app.get('/getglobalstats', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+	var url = ' http://api.steampowered.com/ISteamUserStats/GetGlobalStatsForGame/v0001/?format=json&appid=' + qParams[0].name + '&count=1&name[0]=' + qParams[0].value;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getplayersummary', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXXXXXXXX&steamids=' + qParams[0].name;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getfriendlist', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].name + '&relationship=friend';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getplayerachievements', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=440&key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&steamid=' + qParams[0].name;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+//Requires AppId and playerID
+app.get('/getuserstats', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=' + qParams[0].name + '&key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].value;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getownedgames', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].name + '&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getrecentlyplayed', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].name + '&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/isplayingshared', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/IPlayerService/IsPlayingSharedGame/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=' + qParams[0].name + '&appid_playing=' + qParams[0].value + '&format=json';
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getschema', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = ' http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=XXXXXXXXXXXXXXXXX&appid=' + qParams[0].name;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.get('/getbans', function(req, res) {
+	var qParams = [];
+	for (var p in req.query) {
+		qParams.push({'name':p, 'value':req.query[p]})
+	}
+var url = 'http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=XXXXXXXXXXXXXXXXX&steamids=' + qParams[0].name;
+	request(url, function(err, response, body) {
+		if(!err && response.statusCode < 400) {
+			console.log(body);
+			res.send(body);
+		}
+	});	
+});
+
+app.use(function(req,res){
+  res.type('text/plain');
+  res.status(404);
+  res.send('404 - Not Found');
+});
+
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.send('500 - Server Error');
+});
+
+app.listen(app.get('port'), function(){
+  console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
+});</code></pre> </div>
+	One last section of our server Javascript file is <strong>app.listen()</strong>.  This will start our Express server listening on the 
+	indicated port, and runs a short callback message informing us that it is running.
+	<pre><code>app.listen(app.get('port'), function(){
+  console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
+});</code></pre>
+	</br>
+	<p>One final step is to run our server file using Node.js by typing <strong>node server.js</strong> into the Node.js console (substitute for whatever you named your .js file).  
+	If all has gone well, you should be shown a message similar to this:</p>
+	<img src="images/nodeserv.png">
+	</br>
+	</br>
+
+          <a class="btn btn-lg btn-primary" href="page3.html" role="button">Making our client side AJAX call &raquo;</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="test.js"></script>
+
+  </body>
+</html>

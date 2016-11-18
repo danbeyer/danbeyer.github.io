@@ -1,0 +1,128 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+				  <li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>Other functions to access the data in the JSON Object</h1>
+		</br>
+		<p>Before I finish up this tutorial, I wanted to run through another example function on how to access a JSON object.  In this example, I am using
+		the <mark>for...in</mark> iterator to loop through an array of returned games to get their names and the Steam user's total playtime over the past 2 weeks.</p>
+		</br>
+
+		
+		<p>The JSON Object for my own recently played games (Not much variety here...):</p>
+		<img src="images/RecOwned.png"/>
+		</br>
+		<p>Here is how we could access the data values in this object:</p>
+		
+		<pre><code>function showContents(response){
+	for(var p in response.response.games) {
+
+		var gameName = response.response.games[p].name;
+		
+		console.log(gameName);
+		var play2wks = response.response.games[p].playtime_2weeks;
+		var playForver = response.response.games[p].playtime_forever;
+
+		var newName = document.createElement('p');
+		var newPlayTime = document.createElement('p');
+		newName.textContent = gameName;
+		newPlayTime.textContent = play2wks;
+		
+		document.getElementById('RecentlyOwned').appendChild(newName);
+		document.getElementById('RecentlyOwned').appendChild(newPlayTime);
+	}
+}</pre></code>
+	</br>
+	<p>And if you have the local host server running still, you can try it out below with your own or another person's SteamID:</p>
+		
+		<form>
+			<div class="form-group" id="showRecPlayed">
+			<label for="getNewsInput">ShowRecentlyPlayedGames</label>
+			<input type="text" class="form-control" id ="GetRecPlayedInput" placeholder="Enter SteamID to see recently played games">
+			<button class="btn btn-primary" id="getShowRecPlayed" type="button">Submit</button>
+			</div>
+		</form>
+		<div id="RecentlyOwned"></div>
+
+		</br>
+		
+		<p>If I enter my own SteamID, I get these results below:(that is not 1088hrs in the past 2 weeks, I think it is 10.88hrs)</p>
+		<pre>Path of Exile
+
+1088</pre>
+</br>
+</br>
+<p> That ends this brief tutorial on using Steam's Web API.  Hopefully this tutorial provided you the foundation necessary to use Steam's Web API effectively.  There is a lot of information 
+		available in the various methods provided in this API, I encourage anyone interested to get a Steam account and API key and play around with the various options out there.  
+    </div> <!-- /container -->
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="showFunctions2.js"></script>
+
+
+
+  </body>
+</html>

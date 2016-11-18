@@ -1,0 +1,120 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+				  <li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>The JSON object</h1>
+		</br>
+		<p>On the previous page, our GET request returned a JSON object from the Steam Web API.  As mentioned in the introduction,
+		JSON is one of three formats that can be returned by Steam's Web API.  JSON (Javascript Object Notation) is a widely used data storage
+		and communication format that is organized and easy to access.  For more information visit <a href="http://www.json.org"><strong>JSON.ORG</strong></a> 
+		For the purposes of this tutorial, I have set all the calls to
+		return JSON objects to keep things consistent and because that is the format I have the most experience working with.</p>
+		<p>So far all we have done is accessed the returned JSON object in the console.  For example, here is what is returned when we use AppID 440 as a query for <strong>GetNewsForApp</strong>:</p>
+	<img src="images/JSON.png">
+	</br>
+	</br>
+		<p>Each Steam Web API method will return a JSON object with different data contents.  In the case of this <strong>GetNewsForApp</strong> query, it returned an object called "appnews" that contained 
+		the name:value pairs of "appid:440" and "newsitems:Array[3]".  The array is an array of the 3 most recent news items.  Each news item contains its own specific name:value pairs data contents.  The reason
+		there are 3 objects in the array is because in the <strong>GetNewsForApp</strong> route in our server file, we specified 3 news stories with a max char length of 300.</p>
+		
+		<p>To access the data of a JSON object, we have included this line of code in each of our GET request functions to our server:</p>
+		<pre><code>var response = JSON.parse(req.responseText);</pre></code>
+		</br>
+		<p>The <mark>JSON.parse()</mark> function converts the JSON string returned from the Steam Web API into a more accessible JSON object.  Now that we have an object, we can access its data points 
+		in a similar manner to accessing any other Javascript object.  So for example, if we wanted to only display the contents of the first news object of the JSON object from the previous example, we could 
+		access it by doing something like this:</p>
+		
+		<pre><code>response.appnews.newsitems[0].contents</pre></code>
+		
+		<p>This will give us the first news story:</p>
+		<pre>An update to Team Fortress 2 has been released. The update will be applied automatically when you restart Team Fortress 2. The major changes include: * Fixed a bug related to using the Dead Ringer while carrying 
+	the flag; * Fixed some Strange map filters displaying the wrong map names in their descr...</pre>
+		<br>
+		
+		<p>We can add functions to display the various compenents of the JSON objects to our Javascipt functions file.  Below I have created a data entry box and button for the GetNewsApp from earlier in the tutorial, but I 
+		have added a new function that contains a showContent function that will display the contents of all 3 of the news items for a game.</p>
+		<form>
+			<div class="form-group" id="NewsContent">
+			<label for="getNewsInput">GetContentsNewsForApp</label>
+			<input type="text" class="form-control" id ="GetContentsNewsForAppInput" placeholder="Enter game AppID to see its 3 most recent news headlines">
+			<button class="btn btn-primary" id="getContentsNewsForApp" type="button">Submit</button>
+			</div>
+		</form>
+	<div id="newsItems"></div>
+
+        <p>
+          <a class="btn btn-lg btn-primary" href="page6.html" role="button">Wrapping things up/other functions &raquo;</a>
+        </p>
+      </div>
+    </div> <!-- /container -->
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="showFunctions.js"></script>
+
+
+
+  </body>
+</html>

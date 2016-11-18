@@ -1,0 +1,97 @@
+<!-- Author: Daniel Beyer
+<!-- CS290 Web Development
+<!-- 11/16/16
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Steam Web API How-To-Guide</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Steam Web API How-To-Guide</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Navigation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="page1.html">Obtaining your API Key</a></li>
+                  <li><a href="page2.html">Writing our server</a></li>
+                  <li><a href="page3.html">Making our client side request</a></li>
+				  <li><a href="page4.html">Example functioning site</a></li>
+				  <li><a href="page5.html">JSON object</a></li>
+				  <li><a href="page6.html">Wrapping up</a></li>
+                  <li role="separator" class="divider"></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <h1>Steam Web API How-To-Guide</h1>
+		<br/>
+		<a href="http://store.steampowered.com/"><img class="indexPage" src="images/Steam_logo.png"></a>
+			<p>Steam is a digital distribution platform developed by Valve Corporation that focuses primarily on online video game distribution.
+			The software provides an API called Steamworks that developers can use to integrate some of Steam’s more popular features into their games, 
+			such as social networking features, achievements, and friend lists.  Steam’s Web API is an HTTP-based API that allows users to access many 
+			of the Steamworks features.  Among the methods in the Web API are methods to return the latest news for a particular game, return a global 
+			achievements list for a game, return an achievement list for a particular Steam user and particular game, and methods to return lists of 
+			owned and recently played games for a Steam user.  
+			The Steam web documentation can be found at <a href ="https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29"></a>
+			While this documentation nicely lays out the various methods of the API, it is lacking in any kind of getting-started guide.  
+			Here I will lay out the basics of how to get started using Steam's Web API.</p>
+			</br>
+			
+			<p> As a novice in web development myself, this tutorial will be geared towards those with a basic understanding in Javascript and server side development.
+			With that said, some understanding in <a href="https://nodejs.org/en"><strong>Node.js</strong></a> will be helpful.  
+			If you do not already have a Steam account, you can sign up here: <a href="https://store.steampowered.com/join/?"><strong>Steam account</strong></a></p> 
+        <p>
+          <a class="btn btn-lg btn-primary" href="page1.html" role="button">Getting started &raquo;</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+
+  </body>
+</html>
