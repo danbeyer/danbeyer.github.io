@@ -1,6 +1,5 @@
 // Author: Daniel Beyer
-// CS290 Web Development
-// 11-16-16
+
 document.addEventListener('DOMContentLoaded', bindShowRecPlayedButton);
 
 function bindShowRecPlayedButton(){
