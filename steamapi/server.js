@@ -1,6 +1,4 @@
 // Author: Daniel Beyer
-// CS290 Web Development
-// 11-16-16
 
 var express = require('express');
 var apiKey = '754BFD966BEBE0588B710CD6A6A05E07';
