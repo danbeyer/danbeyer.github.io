@@ -75,7 +75,7 @@ function bindOrgButton() {
 					
 				}
 				console.log(resultsArray);
-				Papa.parse("https://dashboard.healthit.gov/datadashboard/data/MU_REPORT_2016.csv", {
+				Papa.parse("https://github.com/danbeyer/danbeyer.github.io/blob/master/emrsearch/Book1.csv", {
 				download: true,
 				step: function(row) {
 				console.log("Row:", row.data);
