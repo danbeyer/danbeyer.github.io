@@ -75,7 +75,7 @@ function bindOrgButton() {
 					
 				}
 				console.log(resultsArray);
-				Papa.parse("https://github.com/danbeyer/danbeyer.github.io/blob/master/emrsearch/Book1.csv", {
+				Papa.parse("https://raw.githubusercontent.com/danbeyer/danbeyer.github.io/master/emrsearch/Book1.csv", {
 				download: true,
 				step: function(row) {
 				console.log("Row:", row.data);
