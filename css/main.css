@@ -43,4 +43,5 @@ a{
     margin-bottom: 1em;
 }
 
+img.align-center {  display: block;  margin: 0px auto;} img.medium {  width: 150px;  height: 150px;
 
