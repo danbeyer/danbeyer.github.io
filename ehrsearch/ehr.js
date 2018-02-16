@@ -95,7 +95,7 @@ function bindOrgButton() {
 		var key = 0;
 		var op = 0;
 		var value = 0;
-		var pQuery = 'http://www.bloomapi.com/api/search/usgov.hhs.npi?';
+		var pQuery = 'https://www.bloomapi.com/api/search/usgov.hhs.npi?';
 		if(orgName != "") {
 			key += 1;
 			op += 1;
