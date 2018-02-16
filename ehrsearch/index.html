@@ -143,7 +143,7 @@
 		<br/>
 		<p style="font-size:12px">Go to the federal <a href="https://dashboard.healthit.gov/datadashboard/documentation/ehr-products-mu-attestation-data-documentation.php">Health IT Dashboard</a> 
 		and chose a program year to download.  Once downloaded, select the file below and click Search to perform the search.  Please do not select the complete dataset as currently
-		this site is not prepared to handle that large of a file.</p>
+		this site is not prepared to handle that large of a file.  It can take up to 30 seconds to perform the search, so please be patient.</p>
 		
 		<input id="myFile" type="file" name="files" value="Load File" /><br/>
         <input type="submit" id="submitData" class="btn btn-primary btn-large"  value="Search" />
@@ -152,18 +152,17 @@
 
             <div class="col-md-4">
                 <h3>Project Description</h3>
-		<h3><b>01/31/18 - The Videntity Provider NPI API has changed their credentialing and so the database is no longer accessible and is no longer secure.  I am looking at other alternatives or I may take this site down, 
-			but for now the search does not work.</b></h3>
                 <p>This website allows users to search public .CSV files from the federal Medicare Electronic Health Record (EHR) Incentive Program to find the EHR systems in use by healthcare providers.
-				An AJAX XHR object utilizes the <a href="https://registry.npi.io/registry/provider-search">National Provider Registry API</a> to find the NPI numbers for the healthcare providers specified by the users' search criteria.
-				The site then uses the wonderful <a href="www.papaparse.com">Papaparse</a> to parse the .CSV files into JSON format.  The JSON object is then searched to find the EHR systems in use by the corresponding 
+				The the data from the Medicare EHR Incentive Program only identifies healthcare providers by their NPI (National Provider Identifier) numbers, and the only reliable database of NPI numbers is the <a href="https://npiregistry.cms.hhs.gov/registry/help-home">National Plan and Provider Enumeration System</a>.
+				The NPPES does not allow for CORS (Cross-Origin Resource Sharing), so I use JSONP to access <a href="https://www.bloomapi.com/documentation/public-data">Bloom API</a>, which does allows CORS using JSONP with callback functionality.  The Bloom API then uses the search criteria I provide to access the NPPES data.  
+				My site then uses the wonderful <a href="www.papaparse.com">Papaparse</a> to parse the .CSV files into JSON format.  The JSON object is then searched and compared to the results data from the NPPES to find the EHR systems in use by the corresponding 
 				NPI numbers, and a dynamic table is created to display the results.  </p>
                 <h3>The site is a work in progress.  Future improvements/plans:</h3>
                 <ul>
                     <li>To bypass CORS issues and directly access the .CSV file from the healthit website, consider using node.js or some other form of server to server communication</li>
                     <li>Allow user to specify type of provider to narrow search results</li>
                     <li>Add Loader loading animation during searching/parsing</li>
-		    <li>Once able to bypass CORS, access <a href="https://npiregistry.cms.hhs.gov/">NPPES NPI Registry API</a> to find NPI numbers.  This is a .gov site and so more reliable than the site currently used </li>
+		    <li>Host the .CSV files and/or NPPES data on my own servers to bypass CORS and allow for remote searching instead of necessitating users upload the .CSV file to the browser.</li>	
                     
                 </ul>
             </div>
